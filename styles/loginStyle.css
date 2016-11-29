@@ -1,0 +1,41 @@
+.bodyContainer {
+	font-family: Arial, Helvetica, sans-serif;
+	margin-left: 26%;			
+}
+         
+label {
+    font-weight: bold;
+    width: 100px;
+    font-size: 14px;
+}
+         
+
+		 
+.headerContainer {
+	display: flex;
+	flex-direction: row;            
+	flex-wrap: nowrap;              
+	justify-content: initial; 
+}
+		 
+.right {
+	width: 90%;
+	margin-left: 40px;
+}
+		 
+#title {
+	font-family: "Arial";
+	padding-left: 15%;
+	color: #29a3a3;
+	font-weight: 900;
+	font-size: 35px;
+}
+		 
+label{
+	display: inline-block;
+	width: 100px;
+}
+		
+#loginbtn {
+	margin-left: 205px;
+}
