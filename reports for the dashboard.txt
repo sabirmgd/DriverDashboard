@@ -1,0 +1,35 @@
+- what I have to do is a lot of work in the Driver dashboard
+what reports and filters
+passengers summary-> number of passengers
+male and female 
+rides they take 
+rides they cancel 
+money they put
+
+
+drivers
+rides they make 
+rides they cancel 
+money they generate 
+last active 
+how many males money 
+how many females money 
+male to male rides
+male to female rides 
+female to female rides 
+
+ride cost to caclulate revenue, add it in the configuration table 
+
+
+for all the years 
+for all the months in the year 
+for all the weeks of the months
+for all the days of the week 
+for all the times in the day 
+
+for this hour 
+for this day
+for this week 
+for this month 
+for this yaer 
+
