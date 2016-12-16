@@ -3,7 +3,7 @@
    session_start();
    
    function isSessionValid (){
-	   return($_SESSION['timeout'] + 60 > time() && (isset($_SESSION['login_user']))  ) ;
+	   return($_SESSION['timeout'] + 6000 > time() && (isset($_SESSION['login_user']))  ) ;
 	   
    // && (isset($_SESSION['login_user'])) 
 	   
