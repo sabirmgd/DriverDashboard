@@ -21,7 +21,7 @@
      $email = filter_var( $_POST['email'] ,FILTER_SANITIZE_STRING) ;
 	 // $_POST['password']
       $mypassword = filter_var($_POST['password'] ,FILTER_SANITIZE_STRING) ;
-      
+       $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
 	  
 	  //echo $email;
 	  //echo $mypassword;
@@ -35,14 +35,15 @@
 	  
 	  //create the salted password
 	  $mypassword = hash("sha256", $mypassword . $salt);
-	  
-	  
+	   $correctPassword = password_verify($mypassword, $row["password"]);
+echo "is true : " . $correctPassword;
+//echo "hash from db : " . $hashFromDatabase;
 	  // compare the salted password to the password from the database
       
 	  
 	 // $count = $result->num_rows;
-    
-	if($mypassword == $row["password"]) {
+    //$mypassword == $row["password"] || 
+	if( password_verify($mypassword, $row["password"]) ) {
 		  
 		  //echo 'nigga';
 		  

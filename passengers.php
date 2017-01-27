@@ -40,8 +40,7 @@ function makeDataTableTable ($tableID,$tableHeader,$tableDatabaseColumns,$dataAr
 }
 	
 	
-	$tableID = 'passengers';
-	makeDataTableTable ($tableID,$tableHeader,$tableHeader,$dataAraay);
+	
 	
 
 //echo '<script> $("#drivers").DataTable(); </script>';
@@ -70,10 +69,24 @@ $conn = null;
 
 
 <style>
+.title {
 
+									font-family:Georgia,serif;
+									color:#4E443C;
+									font-variant: small-caps; text-transform: none; font-weight: 100; margin-bottom: 0;
+									margin:auto;
+									font-size:30px;
+									text-align: center;
+									}
 
 </style>
 <body>
+ <?php include('welcome.php'); ?>
+ <div style="text-align: center;"><br><br>
+ <span class = "title"> list of passengers </span><br><br>
+ </div>
+<?php $tableID = 'passengers';
+	makeDataTableTable ($tableID,$tableHeader,$tableHeader,$dataAraay);?>
 </body>
 
 

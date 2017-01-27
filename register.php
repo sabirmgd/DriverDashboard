@@ -40,7 +40,7 @@ function filterRequestParameters ($data,$parametersArray)
       $email = filter_var( $_POST['email'] ,FILTER_SANITIZE_STRING) ;
 	 // $_POST['password']
       $mypassword = filter_var($_POST['password'] ,FILTER_SANITIZE_STRING) ;
-      
+      $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
 	  $intermediateSalt = md5(uniqid(rand(), true));
       $salt = substr($intermediateSalt, 0, MAX_LENGTH);
       $mypassword = hash("sha256", $mypassword . $salt);
@@ -51,7 +51,7 @@ function filterRequestParameters ($data,$parametersArray)
 	  
 	    
 	 //$stmt->bind_param('sss',$email, $mypassword, $salt);
-	 $stmt->execute(array($email, $mypassword, $salt));
+	 $stmt->execute(array($email,  $hash , $salt));
 	  
 	$conn = null;	
 	  

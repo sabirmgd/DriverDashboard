@@ -6,20 +6,25 @@ include("/src/Firebase.php");
 	$tableName = 'drivers'; 
 	
 	
-	 function getRegistrationTokenUsingEmail ($email,$tableName)	{
+	
 		
-		include("config.php");
-	$getTokenSql = " SELECT GCMID FROM  $tableName WHERE email=? " ;
-	//echo $getTokenSql;
+	$getTokenSql = " SELECT ID,GCMID FROM  drivers WHERE email=? " ;
+	
 	$getTokenStatement = $conn->prepare($getTokenSql);
 	$getTokenStatement->execute(array($email));
-	$GCMID = $getTokenStatement->fetch()['GCMID'];
-	return $GCMID;
-	}	
+	$GCMID_ID = $getTokenStatement->fetch();
+	
+	$GCMID = $GCMID_ID['$GCMID'];
+	$ID = $GCMID_ID['ID'];
+	
+	$sql = " DELETE FROM cars WHERE driverID = ?" ;
+	$stml = $conn->prepare($sql);
+	$stml->execute(array($ID));
 	
 	
-	$GCMID = getRegistrationTokenUsingEmail ($email,$tableName);
-	echo $GCMID;
+	$firebaseData = array("status" => "3");
+	Firebase::sendData($firebaseData,$GCMID,"driver");
+	
 	$sql = " DELETE FROM drivers WHERE email = ?" ;
 	$stml = $conn->prepare($sql);
 	$stml->execute(array($email));

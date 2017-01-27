@@ -61,7 +61,7 @@ function test_input($data) {
 				}
 		}
 	 
-	 function  generateRandomCode($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+	 function  generateRandomCode($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyz')
 {
     $str = '';
     $max = mb_strlen($keyspace, '8bit') - 1;
@@ -91,11 +91,6 @@ $emailError = $passwordError = $genderError = $phoneError = $carModelError = $ca
     $email = test_input($_POST["email"]);
   }
   
-    if (empty($_POST["password"])) {
-    $passwordError = "password is required";
-  } else {
-    $password = test_input($_POST["password"]);
-  }
   
     if (empty($_POST["gender"])) {
     $genderError = "gender is required";
@@ -172,8 +167,8 @@ $emailError = $passwordError = $genderError = $phoneError = $carModelError = $ca
 		
 		$randomCode = generateRandomCode (6);
 		$message = ' welcome to Driver, we are blessed to have you here, your password is: '		. $randomCode;
-		$continue = send_mail($email,$message,'welcome to Driver! ');
-		$hash = password_hash($password, PASSWORD_DEFAULT);
+		//$continue = send_mail($email,$message,'welcome to Driver! ');
+		$hash = password_hash($randomCode, PASSWORD_DEFAULT);
 		
 		$insertStatement = $conn->prepare('INSERT INTO `drivers`(`email`, `gender`, `fullname`, `password`,`phone` , `active`)  VALUES(?,?,?,?,?,?)');
 	
@@ -205,8 +200,16 @@ $emailError = $passwordError = $genderError = $phoneError = $carModelError = $ca
 		
 		
 	}
-	if ($continue =='1')
+	if ($continue)
 	{
+		$email = "";
+		$phone = "";
+		$carNumber ="";
+		$carModel ="";
+		$carColor = "";
+		$carYear ="";
+		
+		
 		$error = 'driver has been succesfully added to the database';
 	}
 	
@@ -255,18 +258,18 @@ $emailError = $passwordError = $genderError = $phoneError = $carModelError = $ca
    <body bgcolor = "#FFFFFF">
 	
 	
-
-
+   <?php include('welcome.php'); ?>
+	
 
       <div align = "center">
          <div style = "width:400px; border: solid 1px #333333; " align = "left">
-            <div style = "background-color:#800080; color:#FFFFFF; padding:3px;"><b>add a driver</b></div>
+            <div style = "background-color:#D3D3D3; color:#000000; padding:3px;"><b>add a driver</b></div>
 				
             <div style = "margin:30px">
-               
+               </b></b></b></b>
                <form action = "" method = "post">
                   <label>email : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label></br><input type = "text" value = "<?php echo $email ;?>" name = "email" class = "box"/>&nbsp;&nbsp;<span class="error"><?php echo $emailError;?></span><br>
-                  <label>Password :</label></br><input type = "password" name = "password" class = "box" value = "<?php echo $password ;?>"/>&nbsp; &nbsp;<span class="error"><?php echo $passwordError;?></span><br>
+                  
 				  <label>gender :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label> <input type="radio" name="gender" <?php if (isset($gender) && $gender=="female") echo "checked";?> value="female">Female
 				  <input type="radio" name="gender" <?php if (isset($gender) && $gender=="male") echo "checked";?> value="male">Male
 				  <span class="error">* <?php echo $genderError;?></span></br>

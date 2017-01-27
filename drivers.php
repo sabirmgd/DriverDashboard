@@ -4,7 +4,7 @@ include("config.php");
 //include('session.php');
 
 
-$sql = "SELECT * FROM drivers";
+$sql = "SELECT * FROM drivers AS d INNER join cars AS c ON d.ID = c.driverID";
 $sth = $conn->prepare($sql );
 $sth->execute();
 $dataAraay = $sth->fetchAll();
@@ -17,9 +17,9 @@ function adminActiveDriver ($email,$active)
 }
 //,"longitude","latitude"
 //adminActiveDriver("insomniaa@gmail.com",'0');
-$tableHeader = array("driver","email","gender","phone","active","last active day","last active time","seconds","admin active control","");
+$tableHeader = array("driver","email","gender","phone","active","last active day","last active time","seconds","admin active control","plate number","car model","delete");
 
-$tableDatabaseColumns = array("fullname","email","gender","phone","active","lastUpdated","adminActive");
+$tableDatabaseColumns = array("fullname","email","gender","phone","active","lastUpdated","adminActive","model","plateNumber");
 
 // drivers and requests table 
 // lastUpdated means the request time 
@@ -45,7 +45,7 @@ $tableHeader2=array ("requestID","driver","gender","price","day","time","seconds
 function makeDataTableTable ($tableID,$tableHeader,$tableDatabaseColumns,$dataAraay){
 	//$tableDatabaseColumns = $tableHeader;
 	echo '<div style = "width: 95%;" >' ;
-	echo "<table id= " . $tableID . " class='display' cellspacing='0' width='95%'>" ;
+	echo '<table id= "' . $tableID . '" class="display" cellspacing="0" width="95%">' ;
 	
 	echo '<thead>
 			<tr> ' ; 
@@ -98,8 +98,9 @@ function makeDataTableTable ($tableID,$tableHeader,$tableDatabaseColumns,$dataAr
 			 
 			 
 		 }
-		 echo "<td>" .  '<span style="color:red;" class="glyphicon glyphicon-remove delete"></span>' .  "</td>" ;
-			  "</tr>" ;
+		 $editDelete =  '<td>' .  '<span style="color:red;" class="glyphicon glyphicon-remove delete"></span>' .  '</td></tr>' ;
+			//<a type="button" data-toggle="modal" onclick="editDriver(sabirmgd@gmail.com)" data-target="#editDriverModal" > <span class="glyphicon glyphicon-edit"></span></a>'
+			echo  $editDelete;
     }
 	echo '</tbody>' ;
 	echo "</table>";
@@ -122,7 +123,8 @@ $conn = null;
 
 <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" />
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" language="javascript"  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
  <link rel="stylesheet" type="text/css" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
  <link rel="stylesheet" type="text/css" type="text/css" href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
 <!-- Include Date Range Picker -->
@@ -132,8 +134,170 @@ $conn = null;
 <script type="text/javascript" language="javascript"  src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script src="jquery.dataTables.yadcf.js"></script>
  
- 
+ <style>
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+.active {
+    background-color: #4CAF50;
+}
+</style>
+
   <script type="text/javascript">
+  
+  
+
+	function editDriver(email = null) {
+	console.log ("I am here");
+	var manageMemberTable;
+	console.log (email);
+					manageMemberTable = $("#drivers").DataTable();
+    if(email) {
+ 
+        // remove the error 
+        $(".form-group").removeClass('has-error').removeClass('has-success');
+        $(".text-danger").remove();
+        // empty the message div
+        $(".editMessages").html("");
+ 
+        // remove the id
+        $("#member_email").remove();
+ 
+        // fetch the member data
+        $.ajax({
+            url: 'getSelectedDriver.php',
+            type: 'post',
+            data: {member_email : email},
+            dataType: 'json',
+            success:function(response) {
+                $("#editEmail").val(response.email);
+ 
+                $("#editFullname").val(response.fullname);
+ 
+
+ 
+                $("#editGender").val(response.gender);
+ 
+                
+				$("#editPhone").val(response.phone);
+               
+ 
+                // mmeber id 
+            $(".editDriverModal").append('<input type="hidden" name="member_email" id="member_email" value="'+response.email+'"/>');
+				console.log ($("#editDriverModal").html());
+			console.log(response.email);
+                // here update the member data
+                $("#editDriverForm").unbind('submit').bind('submit', function() {
+				console.log("I am here");
+                    // remove error messages
+                    $(".text-danger").remove();
+ 
+                    var form = $(this);
+ 
+                    // validation
+                    var editEmail = $("#editEmail").val();
+                    var editFullname = $("#editFullname").val();
+                    var editGender = $("#editGender").val();
+                    var editPhone = $("#editPhone").val();
+ 
+                    if(editEmail == "") {
+                        $("#editEmail").closest('.form-group').addClass('has-error');
+                        $("#editEmail").after('<p class="text-danger">The start time field is required</p>');
+                    } else {
+                        $("#editEmail").closest('.form-group').removeClass('has-error');
+                        $("#editEmail").closest('.form-group').addClass('has-success');              
+                    }
+ 
+                    if(editFullname == "") {
+                        $("#editFullname").closest('.form-group').addClass('has-error');
+                        $("#editFullname").after('<p class="text-danger">The end time field is required</p>');
+                    } else {
+                        $("#editFullname").closest('.form-group').removeClass('has-error');
+                        $("#editFullname").closest('.form-group').addClass('has-success');               
+                    }
+ 
+                    if(editGender == "") {
+                        $("#editGender").closest('.form-group').addClass('has-error');
+                        $("#editGender").after('<p class="text-danger">The Price field is required</p>');
+                    } else {
+                        $("#editGender").closest('.form-group').removeClass('has-error');
+                        $("#editGender").closest('.form-group').addClass('has-success');               
+                    }
+ 
+					
+                    if(editPhone == "") {
+                        $("#editPhone").closest('.form-group').addClass('has-error');
+                        $("#editPhone").after('<p class="text-danger">The Price field is required</p>');
+                    } else {
+                        $("#editPhone").closest('.form-group').removeClass('has-error');
+                        $("#editPhone").closest('.form-group').addClass('has-success');               
+                    }
+ 
+                    if(editEmail && editFullname && editGender && editPhone) {
+					console.log(form.attr('action'));
+					console.log(form.attr('method'));
+                        $.ajax({
+						
+                            url: form.attr('action'),
+                            type: form.attr('method'),
+                            data: form.serialize(),
+                            dataType: 'json',
+                            success:function(response) {
+							console.log("got a response");
+                                if(response.success == true) {
+                                    $(".editMessages").html('<div class="alert alert-success alert-dismissible" role="alert">'+
+                                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                     '<strong> <span class="glyphicon glyphicon-ok-sign"></span> </strong>'+response.messages+
+                                    '</div>');
+ 
+                                    // reload the datatables
+                                    manageMemberTable.ajax.reload(null, false);
+                                    // this function is built in function of datatables;
+ 
+                                    // remove the error 
+                                    $(".form-group").removeClass('has-success').removeClass('has-error');
+                                    $(".text-danger").remove();
+                                } else {
+                                    $(".editMessages").html('<div class="alert alert-warning alert-dismissible" role="alert">'+
+                                     '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+
+                                     '<strong> <span class="glyphicon glyphicon-exclamation-sign"></span> </strong>'+response.messages+
+                                    '</div>')
+                                }
+                            } // /success
+                        }); // /ajax
+                    } // /if
+ 
+                    return false;
+                });
+ 
+            } // /success
+        }); // /fetch selected member info
+ 
+    } else {
+        alert("Error : Refresh the page again");
+    }
+}
   function getDriversDataArray(){
 	
 	/* this function gets the data from for the analysis table from the first table
@@ -348,7 +512,6 @@ function formatNo(no ){
 	return (parseFloat(Math.round(no * 100) / 100).toFixed(2));
 }
 
-
   </script>
   
   
@@ -446,6 +609,14 @@ function formatNo(no ){
 				  console.log (email);
 				  
 				  
+					
+setInterval( function () {
+    table.ajax.reload();
+}, 10000 );
+
+
+
+				  
 		var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
@@ -468,7 +639,6 @@ function formatNo(no ){
 				);
 				
  </script>
-
 
 </head>
 
@@ -509,8 +679,10 @@ function formatNo(no ){
 
 
 <body>
+<?php// include('welcome.php'); ?>
 
-
+	
+	
 <div style="text-align: center;">
 <span class = "title"> list of drivers </span>
 </div>
@@ -525,6 +697,7 @@ function formatNo(no ){
 
 <?php $tableID = 'drivers'; makeDataTableTable ($tableID,$tableHeader,$tableDatabaseColumns,$dataAraay);?>
 </br>
+
 <div style="text-align: center;"><span class = "title"> drivers summary </span></div></br>
 <div id="DriversSummaryTableDiv" >
 </div>
@@ -533,15 +706,69 @@ function formatNo(no ){
   </br>
   <div id="activePiechart" style="width: 800px; height: 450px;  border-style: solid;border-width: 2px; margin:auto;" ></div>
   </br> </br> </br></br>
-  <script>/*  <div style="text-align: center;"><span class = "title"> drivers performance </span></div></br>*/</script>
+
  
-<?php 
-	//makeDataTableTable ("request_driver",$tableHeader2,$tableDatabaseColumns2,$dataAraay2);?>
 
-
-<div style="text-align: center;">
-
-
-
+<div id="map" > </div>
+<!-- /edit modal -->
+				<div class="modal fade" tabindex="-1" role="dialog" id="editDriverModal">
+     <div class="modal-dialog" role="document">
+     <div class="modal-content">
+     <div class="modal-header">
+     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+     <h4 class="modal-title"><span class="glyphicon glyphicon-plus-sign"></span>  Edit Price </h4>
+     </div>
+      
+     <form class="form-horizontal" action="editDriver.php" method="POST" id="editDriverForm">
+ 
+     <div class="modal-body">
+        <div class="editMessages"></div>
+ 
+             <div class="form-group"> <!--/here teh addclass has-error will appear -->
+             <label for="editEmail" class="col-sm-2 control-label">email</label>
+             <div class="col-sm-10"> 
+             <input type="text" class="form-control" id="editEmail" name="editEmail" placeholder="email">
+                <!-- here the text will apper -->
+             </div>
+             </div>
+			 
+			     <!-- for gender -->
+             <div class="form-group">
+             <label for="editGender" class="col-sm-2 control-label">gender</label>
+             <div class="col-sm-10">
+			  <input id="editGender" type="text" class="form-control" name="editGender" placeholder="Gender" />
+             </div>
+             </div>
+			 
+             <div class="form-group">
+             <label for="editFullname" class="col-sm-2 control-label">name</label>
+             <div class="col-sm-10">
+             <input type="text" class="form-control" id="editFullname" name="editFullname" placeholder="Name">
+             </div>
+             </div>
+             
+			 <div class="form-group"> <!--/here teh addclass has-error will appear -->
+             <label for="editPhone" class="col-sm-2 control-label">phone</label>
+             <div class="col-sm-10"> 
+             <input type="text" class="form-control" id="editPhone" name="editPhone" placeholder="Phone">
+                <!-- here the text will apper -->
+             </div>
+             </div>
+			 
+			 
+			 
+			 
+		     <div class="editDriverModal"></div>
+ 
+     </div>
+     <div class="modal-footer">
+     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+     <button type="submit" class="btn btn-primary">Save changes</button>
+     </div>
+     </form> 
+     </div><!-- /.modal-content -->
+     </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+    <!-- /edit modal -->  
 
 </html>
